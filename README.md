@@ -14,4 +14,4 @@ Changes in the structure of the webpage could break the program.
 # published decks
 
 ## pkg.go.dev/std@go1.22.0
-available at: [AnkiWeb](https://ankiweb.net/shared/info/1050662530) (724 downloads, 23.6.25)
+available at: [AnkiWeb](https://ankiweb.net/shared/info/1050662530) (724 downloads, 23.6.2025)
