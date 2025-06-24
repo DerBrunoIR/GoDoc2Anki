@@ -9,6 +9,7 @@ import (
 )
 
 
+// render node to HTML string
 func HTMLString(node *html.Node) string {
 	var sb strings.Builder
 	if err := html.Render(&sb, node); err != nil {
@@ -40,7 +41,8 @@ func Copy(node *html.Node) *html.Node {
 	}
 }
 
-// Perform a recursive copy of root, copied nodes are added to cpy. 
+// copies the HTML tree of `root` to given root node `cpy`, omitting nodes not fullfilling `sel`. 
+// Textnodes of selected parentes are always copied. 
 func rec(root *html.Node, cpy *html.Node, sel func (*html.Node) bool) {
 	var prev *html.Node = nil
 	for c := root.FirstChild; c != nil; c = c.NextSibling {
@@ -61,7 +63,7 @@ func rec(root *html.Node, cpy *html.Node, sel func (*html.Node) bool) {
 	cpy.LastChild = prev
 }
 
-// the returned copy contains a copy of each children 
+// returns a deep copy of `root`'s html tree
 func DeepCopy(root *html.Node) *html.Node {
 	newRoot := Copy(root)
 	sel := func(node *html.Node) bool {
@@ -71,12 +73,17 @@ func DeepCopy(root *html.Node) *html.Node {
 	return newRoot
 }
 
+// returns a deep copy of root containing only nodes fullfilling `sel`
 func DeepCopyFunc(root *html.Node, sel func(*html.Node) bool) *html.Node {
 	newRoot := Copy(root)
 	rec(root, newRoot, sel)
 	return newRoot
 }
 
+// returns a deep copy of the `root` tree.
+// A node is omitted, iff
+// - it is not matched by `selector`
+// - and none node from its subtree is matched by `selector`. 
 func DeepCopySelector(root *html.Node, selector *css.Selector) (*html.Node) {
 	nodes := selector.Select(root)
 	cache := make(map[*html.Node]bool, len(nodes))
@@ -106,6 +113,10 @@ func DeepCopySelector(root *html.Node, selector *css.Selector) (*html.Node) {
 	return DeepCopyFunc(root, lookup)
 }
 
+// returns a deep copy of the `root` tree.
+// A node is omitted, iff
+// - it is not in any of the given subtrees 
+// - and none node from its subtree is in any of the given subtrees. 
 func DeepCopySubtrees(root *html.Node, subtrees []*html.Node) (*html.Node) {
 	var lookup func(root *html.Node) bool
 	cache := make(map[*html.Node]bool, len(subtrees))
@@ -142,6 +153,7 @@ func DeepCopySubtrees(root *html.Node, subtrees []*html.Node) (*html.Node) {
 
 }
 
+// Run f on all nodes in the given tree.
 func Modify(node *html.Node, f func(*html.Node) error) error {
 	if node == nil {
 		return nil
