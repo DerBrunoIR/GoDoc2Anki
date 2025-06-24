@@ -1,9 +1,11 @@
 package main
 
 /*
-
-This script creates anki cards for each url in urlFile
-
+This script:
+- takes a file of URL's for pkg.io documentation pages.
+- downlaods those pages HTML source (in parallel)
+- creates cards for each constant block, variable block, function block and type block in those HTML pages (in parallel).
+- creates via AnkiConnect an AnkiDeck containing all those cards. 
 */
 
 import (
@@ -29,6 +31,7 @@ import (
 	HTMLTrees "gostdlibintoankicards/pkg"
 )
 
+// start `workerCount` on channel `in` competing go routines that publish to `out`. 
 func Parallel[T any](out chan<-T, in <-chan T, parallel func(chan<-T, <-chan T), workerCount int) {
 	for i := 0; i < workerCount; i++ {
 		go parallel(out, in)
@@ -36,9 +39,10 @@ func Parallel[T any](out chan<-T, in <-chan T, parallel func(chan<-T, <-chan T),
 }
 
 const (
-	urlFile = "./urls_1.22.0.txt"
+	urlFile = "./urls_1.22.0.txt" // TODO: change this to your URL's file.
 )
 
+// datatype passed between pipeline components
 type Task struct {
 	url, deck string 
 	html []byte
@@ -80,6 +84,7 @@ func NewTask(url, deck string) Task {
 	}
 }
 
+// construct and run pipeline
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
@@ -104,6 +109,7 @@ func main() {
 	fmt.Scanln()
 }
 
+// reads urls from file and wraps them in a task instance.
 func TaskGenerator(fp string, out chan<-Task) {
 	file, err := os.Open(fp)
 	if err != nil {
@@ -129,6 +135,7 @@ func TaskGenerator(fp string, out chan<-Task) {
 	log.Printf("'%s' loaded file, %d tasks created\n", fp, task_count)
 }
 
+// download HTML source, found at the tasks url, for any given task instance
 func HtmlDownloader(out chan<-Task, in <-chan Task) {
 	task := <-in
 	Outer: for {
@@ -163,6 +170,7 @@ func HtmlDownloader(out chan<-Task, in <-chan Task) {
 	}
 }
 
+// parse a tasks HTML source and add a Anki note to the task for each constant block, variable block, function block and type block found  
 func HtmlProcessor(out chan<- Task, in <-chan Task) {
 	for task := range in {
 		root, err := html.Parse(bytes.NewBuffer(task.html))
@@ -383,6 +391,7 @@ func GetHtmlAttributeByKey(node *html.Node, key string) (*html.Attribute, error)
 	})
 }
 
+// for each task ensure the associated Anki deck exists and upload all Anki notes from `task` to the specified deck.
 func NoteUploader(client *ankiconnect.Client, in <-chan Task) {
 	decks, err := client.Decks.GetAll()
 	if err != nil {
