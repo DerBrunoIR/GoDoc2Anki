@@ -109,7 +109,7 @@ func main() {
 	fmt.Scanln()
 }
 
-// reads (deck, url) pairs from file and wraps each of them in a task instance.
+// reads (deck, url) pairs from file and wraps each in a task instance.
 func TaskGenerator(fp string, out chan<-Task) {
 	file, err := os.Open(fp)
 	if err != nil {
