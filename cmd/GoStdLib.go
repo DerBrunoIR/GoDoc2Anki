@@ -42,7 +42,7 @@ const (
 	urlFile = "./urls_1.22.0.txt" // TODO: change this to your URL's file.
 )
 
-// datatype passed between pipeline components
+// datatype, that is passed between pipeline components
 type Task struct {
 	url, deck string 
 	html []byte
