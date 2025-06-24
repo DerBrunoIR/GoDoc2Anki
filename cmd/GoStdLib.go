@@ -2,10 +2,10 @@ package main
 
 /*
 This script:
-- takes a file of URL's for pkg.io documentation pages.
-- downlaods those pages HTML source (in parallel)
-- creates cards for each constant block, variable block, function block and type block in those HTML pages (in parallel).
-- creates via AnkiConnect an AnkiDeck containing all those cards. 
+- reads (deck, url) pairs from the file `urlFile`.
+- downlaods for each pair the corresponding HTML source (in parallel)
+- creates cards for each constant block, variable block, function block and type block found in a pairs HTML source (in parallel).
+- for each pair adds all found cards to the given deck via AnkiConnect. 
 */
 
 import (
