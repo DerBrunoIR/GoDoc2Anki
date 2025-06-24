@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-
+// returns first textnode  from `root`'s subtree matching `regex` or nil if no textnode is found.
 func MatchingNodes(root *html.Node, regex *regexp.Regexp) []*html.Node {
 	switch root.Type {
 	case html.TextNode:
