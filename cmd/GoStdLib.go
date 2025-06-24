@@ -31,7 +31,7 @@ import (
 	HTMLTrees "gostdlibintoankicards/pkg"
 )
 
-// start `workerCount` on channel `in` competing go routines that publish to `out`. 
+// starts `workerCount` on channel `in` competing go routines that publish to `out`. 
 func Parallel[T any](out chan<-T, in <-chan T, parallel func(chan<-T, <-chan T), workerCount int) {
 	for i := 0; i < workerCount; i++ {
 		go parallel(out, in)
