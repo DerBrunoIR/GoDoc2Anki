@@ -1,5 +1,5 @@
 > [!Warning]
-> Changes made to the pkg.go.dev UI could break scripts contained in this repository.
+> Changes made to the UIs of certain webpages could break scripts contained in this repository.
 
 # AnkiCardCreator
 
