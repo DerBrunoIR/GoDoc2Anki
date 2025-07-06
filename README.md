@@ -1,3 +1,6 @@
+> [!Warning]
+> Changes made to the pkg.go.dev UI could break scripts contained in this repository.
+
 # AnkiCardCreator
 
 This tool is made for scraping pkg.go.dev and turning the collected HTML into anki cards.
